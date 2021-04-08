@@ -4,14 +4,14 @@
 #include <locale>
 #include <cctype>
 #include <codecvt>
+#include <regex>
 using namespace std;
 
 string coder(string s, int key, int i)
 {
-// Удаление латинских букв
- 
-    for (int i = 0; s[i] != '\0'; i++) { //Пробегаем по строке циклом (слева направо)
-        if (isalnum(s[i]) || ispunct (s[i]) || isblank (s[i])) { //Условие, что символ не является буквой или цифрой
+s = regex_replace(s, regex("№"), " ");
+    for (int i = 0; s[i] != '\0'; i++) {
+        if (isalnum(s[i]) || ispunct (s[i]) || isblank (s[i])) {
 cout << "Ошибка"<<endl;
 return 0;
         }
@@ -26,7 +26,7 @@ return 0;
  int size;
  size=ws.size();
  for (i=0; i<size; i++) {
- ws[i]=ws[i] + key;
+ ws[i]=ws[i] + key%32;
  if (ws[i]>=1072) ws[i]=ws[i]-32;
 
  }
@@ -39,30 +39,28 @@ return 0;
 
 string decoder(string s, int key, int i)
 {
-// Удаление латинских букв
-
- 
-    for (int i = 0; s[i] != '\0'; i++) { //Пробегаем по строке циклом (слева направо)
-        if (isalnum(s[i]) || ispunct (s[i]) || isblank (s[i])) { //Условие, что символ не является буквой или цифрой
+s = regex_replace(s, regex("№"), " ");
+    for (int i = 0; s[i] != '\0'; i++) { 
+        if (isalnum(s[i]) || ispunct (s[i]) || isblank (s[i])) {
 cout << "Ошибка"<<endl;
 return 0;
         }
     }
-// Возведение к верхнему регистру
- locale loc("ru_RU.UTF-8"); // русская локаль для корректной смены регистра
- wstring_convert<codecvt_utf8<wchar_t>, wchar_t> codec; //кодек UTF-8
- wstring ws = codec.from_bytes(s); // перекодируем из UTF-8 in UTF-32
+ locale loc("ru_RU.UTF-8");
+ wstring_convert<codecvt_utf8<wchar_t>, wchar_t> codec;
+ wstring ws = codec.from_bytes(s);
  for (wchar_t & wc: ws) {
  wc = toupper(wc,loc);
  }
  int size;
  size=ws.size();
  for (i=0; i<size; i++) {
- ws[i]=ws[i] - key;
+ ws[i]=ws[i] - key%32
+ ;
  if (ws[i]>=1072) ws[i]=ws[i]-32;
 
  }
- s = codec.to_bytes(ws); // перекодируем из UTF-32 in UTF-8
+ s = codec.to_bytes(ws);
  cout<< "Расшифрованная строка :"<< endl;
  cout << s << "\n";
 
@@ -87,5 +85,6 @@ int main()
  decoder(s,key, i);
  } else {
  cout<<"Данного действия не существует"<<endl;
+ return 0;
  }
 }
